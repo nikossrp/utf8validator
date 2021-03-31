@@ -3,7 +3,7 @@
 
 int main()
 {
-	int ch, head, tail, count = 0, count_asci=0;		//count metritis gia ta multi-bytes, ch o xarakthras
+	int ch, head, tail, count = 0, count_asci=0;		//count metritis gia ta multi-bytes
 	int temp1, temp2, temp3, temp4;								//temp1,2,3,4 oi prosorines metablhtes gia ton elenxo tou code point
 	int code_point;					
 									
@@ -136,7 +136,7 @@ int main()
 								printf("Oversized code point U+%X\n", code_point);
 								return 0;
 							}
-							else if(code_point >= 0xD800 && code_point <= 0xDFFF) 		//το [D800 , DFFF] einai to anepitrepto diastima
+							else if(code_point >= 0xD800 && code_point <= 0xDFFF) 		//Γ΄Γ― [D800 , DFFF] einai to anepitrepto diastima
 							{
 								printf("Invalid code point: U+%X\n", code_point);
 								return 0;
