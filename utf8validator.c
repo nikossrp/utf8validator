@@ -3,8 +3,8 @@
 
 int main()
 {
-	int ch, head, tail, count = 0, count_asci=0;		//count metritis gia ta multi-bytes
-	int temp1, temp2, temp3, temp4;								//temp1,2,3,4 oi prosorines metablhtes gia ton elenxo tou code point
+	int ch, head, tail, count = 0, count_asci=0;		//counter for multi-bytes
+	int temp1, temp2, temp3, temp4;								//temp1,2,3,4 for code point
 	int code_point;					
 									
 
@@ -14,7 +14,7 @@ int main()
 	{	
 		
 	
-														//Gia ta 4 bytes elenxos head , tail
+														//for 4 bytes check head , tail
 														
 		head = (unsigned int)ch >> 3;					// ton kanw unsigned int  gia otan ton kanw olisthisi na mhn parw arnhtiko arithmo
 		
@@ -23,16 +23,16 @@ int main()
 		temp1 = (unsigned long int)temp1 <<6;
 		
 													
-		if(head == 30)								// elenxos gia to head ton 4 bytes
+		if(head == 30)								// check head for 4 bytes
 		{
-			ch = getchar();							// pairnw to epomeno byte
+			ch = getchar();							// take the next byte
 	
 	
 			tail = (unsigned int) ch >> 6;	
-			temp2 = ch & (0xFF >> 2); 						// 10xxxxxx & 111111  = xxxxxx pairnw ta 6 bits tis prwths ouras
+			temp2 = ch & (0xFF >> 2); 				// 10xxxxxx & 111111  = xxxxxx take the 6 bits from first tail 
 					
 			
-			if(tail == 2)									// an einai duo einai tis morfhs 10xxxxxx ara pame stin epomenh oura kok
+			if(tail == 2)							// if tail == 2 it has the form 10xxxxxx so we go to the next tail and so on
 			{
 			
 			
@@ -40,7 +40,7 @@ int main()
 				ch = getchar();
 				tail = (unsigned int) ch >> 6;	
 				
-				temp3 = ch & (0xFF >> 2);					//pairnw ta 6 bits tis defteris ouras
+				temp3 = ch & (0xFF >> 2);					//first we take the 6bits from 2nd tail
 					
 				if(tail == 2)
 				{
@@ -48,17 +48,16 @@ int main()
 					ch = getchar();
 					
 					tail = (unsigned int) ch >> 6;
-					temp4 = ch & (0xFF >> 2);				//pairnw ta 6 bits tis tritis ouras
+					temp4 = ch & (0xFF >> 2);				//6bits from 3rd tail
 					
 					
 					if(tail == 2)
 					{
-						code_point = temp1 | temp2;			  							//bazw ta 6 bits tis prwths ouras sthn kefalh
-						code_point = ((unsigned long int)code_point << 6) | temp3;		//bazw ta 6 bits tis defteris ouras	
-						code_point = (code_point	<< 6) | temp4;						//bazw ta 6 bits tis tritis ouras
-						
+						code_point = temp1 | temp2;			  		//put the 6bits from first tail in head
+						code_point = ((unsigned long int)code_point << 6) | temp3;		//put the 6bits from second tail	
+						code_point = (code_point	<< 6) | temp4;						//6bits from 3rd tail						
 					
-						if(code_point < 0x010000 )										//shmenei oti kwdikopoihte kai se ligotera bytes
+						if(code_point < 0x010000 )						//this mean we could have fewer bytes
 						{ 
 							printf("Oversized UTF-8 code point U+%X\n", code_point);
 							return 0;
@@ -66,7 +65,7 @@ int main()
 						else if(code_point >= 0x010000 && code_point <= 0x10FFFF)
 						{
 						
-								count++;											//o metritis gia tous multi- bytes au3anei kata 1
+								count++;						
 						
 						}else if(code_point > 0x10FFFF){
 							
@@ -89,29 +88,29 @@ int main()
 					}
 				
 			}else {
-						printf("Invalid tail byte: 0x%X\n", ch);			//an estw kai mia oura den antistixh sthn morfh 10xxxxxx den einai UTF-8
+						printf("Invalid tail byte: 0x%X\n", ch);	//if a tail not corrensponse on form 10xxxxxx, it is not UTF8
 						return 0;
 					}
 			
 		
 	
-		}else if(head != 30){						//an den einai 4bytes
+		}else if(head != 30){						//if it isn't 4 bytes
 			
 				
-				head = head >> 1;					// gia ta 3 bytes	elenxos head , tail
+				head = head >> 1;					// for 3 bytes	check head , tail
 			
-				temp1 = ch & (0xF);							//pairnw ta 4 teleftaia bits tis keffalhs
+				temp1 = ch & (0xF);							//take the  4 last bits from head
 				
 					
 				if(head == 14)					
 				{
 				
 					
-					ch = getchar();							//prwth oura
+					ch = getchar();					//first tail
 					
-					tail = (unsigned int) ch >> 6;			//pairnw ta 2 prwta bits tis ouras
+					tail = (unsigned int) ch >> 6;			//take the 2 first bits from tail
 					
-					temp2 = ch & (0xFF >> 2);				//apomonwnw ta 6 bits tis prwths ouras
+					temp2 = ch & (0xFF >> 2);				//isolate the 6 bits from first tail
 					
 				
 					if(tail == 2)
@@ -119,7 +118,7 @@ int main()
 						
 						ch = getchar();
 						
-						tail = (unsigned int) ch >> 6;			// ta 2 bits tis defterhs ouras
+						tail = (unsigned int) ch >> 6;			// 2 bits from second tail
 						
 						temp3 = ch & (0xFF >> 2);			//apomonwnw ta 6 bits tis defterhs ouras
 						
@@ -136,13 +135,13 @@ int main()
 								printf("Oversized code point U+%X\n", code_point);
 								return 0;
 							}
-							else if(code_point >= 0xD800 && code_point <= 0xDFFF) 		//ôï [D800 , DFFF] einai to anepitrepto diastima
+							else if(code_point >= 0xD800 && code_point <= 0xDFFF) 		// [D800 , DFFF] einai to invalid space
 							{
 								printf("Invalid code point: U+%X\n", code_point);
 								return 0;
 								
 							}
-							else if(code_point >= 0x0800 && code_point <= 0xFFFF)		//auto einai to diastima gia to 3 bytes \ [D800 , DFFF]
+							else if(code_point >= 0x0800 && code_point <= 0xFFFF)		//this is the space for 3 bytes \ [D800 , DFFF]
 							{
 								count++;
 								
@@ -169,7 +168,7 @@ int main()
 						
 						}
 					
-				}else if(head != 14){							//gia ta 2 bytes head,tail
+				}else if(head != 14){							//for 2 bytes head,tail
 						
 						head = head >> 1;	
 						
@@ -188,13 +187,13 @@ int main()
 							{
 								
 								temp1 =(unsigned long int)temp1 << 6;
-								code_point = temp1 | temp2;				// bazw thn 1h kai monadiki oura
+								code_point = temp1 | temp2;				// put the 1h tail
 							
 								if(code_point < 0x0080){
 									printf("Oversized code point U+%X", code_point);
 									return 0;
 								}
-								else if(code_point >= 0x0080 && code_point <= 0x07FF)		// to epitreptw diastima gia ta 2 bytes
+								else if(code_point >= 0x0080 && code_point <= 0x07FF)		// the valid psace for 2 bytes
 								{
 									count++;
 									
@@ -211,7 +210,7 @@ int main()
 							 
 							}
 							
-						}else if(head != 6){					//gia to 1 byte elenos head
+						}else if(head != 6){					//for 1 byte check head
 							
 							head = head >> 2;
 							
@@ -220,10 +219,10 @@ int main()
 								code_point = ch & (0xFF >> 1);  	//0xxxxxxx & 1111111 == xxxxxxx	
 								
 							
-								if(code_point >= 0x0000 && code_point <= 0x007F)			//to epitrepto diastima gia to 1 byte
+								if(code_point >= 0x0000 && code_point <= 0x007F)			//the valid space for 1 byte
 								{
 									
-									count_asci++;				//afxanw to metriti gia tous ASCII kwdikous
+									count_asci++;				//increace the counter for ascii numbers
 									
 								}else{
 							
@@ -235,9 +234,9 @@ int main()
 								
 							}else if(head != 0){
 								
-								printf("Invalid head byte: 0x%X \n", ch);		//sthn periptwsh pou den einai oute 1 byte tote exoume allh kwdikopoihsh
+								printf("Invalid head byte: 0x%X \n", ch);		//in case that isn't 1 bytes we have neither ASCII nor UTF8 code
 								return 0;
-							}													//tote ektupwse se 16adikh morfi to ch (%x)
+							}								//so print the hex form ( ch (%x) )
 						}
 					
 				}
